@@ -60,5 +60,9 @@ public class FournisseurService implements IFournisseurService {
 	  
 		return produit.getFournisseurs();
 	}
+	 public List<Produit> getProduits(Long idf) {
+			
+			return produitRepository.getByFournisseur(idf);
+		}
 
 }

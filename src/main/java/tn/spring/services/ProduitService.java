@@ -7,7 +7,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.hibernate.boot.model.naming.ImplicitNameSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -320,6 +322,14 @@ public class ProduitService implements IProduitService {
 				
 				return listproductMap;
 	}
+	 public void removeFournisseur(Long idf,Long idP)
+	    {
+	         Produit p=produitRepository.findById(idP).get();
+	       List<Fournisseur> four= p.getFournisseurs().stream().filter(c->c.getIdFournisseur()!=idf).collect(Collectors.toList());
+	         p.setFournisseurs( four);
+	         produitRepository.save(p);
+	         
+	    }
 
 	}
 

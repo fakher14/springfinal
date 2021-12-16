@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import tn.spring.entities.Fournisseur;
+import tn.spring.entities.Produit;
+import tn.spring.repositories.ProduitRepository;
 import tn.spring.services.IFournisseurService;
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -23,6 +25,8 @@ public class FournisseurRestController {
 	
 	@Autowired
 	IFournisseurService fournisseurService;
+	@Autowired
+	ProduitRepository produitRepository;
 	
 	@CrossOrigin(origins = "http://localhost:4200")
 	@GetMapping("/get-all")
@@ -67,6 +71,12 @@ public class FournisseurRestController {
 	@ResponseBody
 	public List<Fournisseur> getFournisseursbyproduit(@PathVariable("p-id")Long idp){
 		return fournisseurService.getfournisseursbyid(idp);
+	}
+	@CrossOrigin(origins = "http://localhost:4200")
+	@GetMapping("/get-products/{id}")
+	public List<Produit> getProducts(@PathVariable("id")Long fournisseurId) {
+		return produitRepository.getByFournisseur(fournisseurId);
+		 
 	}
 	
 	

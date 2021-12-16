@@ -31,4 +31,6 @@ public interface ProduitRepository extends JpaRepository<Produit, Long> {
 
 	@Query("select df from DetailFacture df where (df.produit.idProduit= :id) and(df.facture.client.categorieClient= :categorie)")
 	List<DetailFacture> getListdetfacturess(@Param("id")Long idProd,@Param("categorie") CategorieClient c);
+	@Query("select p from Produit p  join p.fournisseurs f where f.idFournisseur= :fid")
+	List<Produit> getByFournisseur (@Param("fid")Long fid);
 }

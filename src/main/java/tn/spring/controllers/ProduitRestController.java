@@ -17,13 +17,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tn.spring.entities.*;
 import tn.spring.services.IProduitService;
+import tn.spring.services.ProduitService;
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/products")
 public class ProduitRestController {
 
 	@Autowired
-	IProduitService produitService ;
+	ProduitService produitService ;
 	
 	
 	@GetMapping("/get-all")
@@ -121,5 +122,11 @@ public class ProduitRestController {
 	public Map<String, String> Mapmostsalesproduits() throws ParseException{
 		return produitService.ListMostsaleproduitdechaquemois();
 	}
+	@CrossOrigin(origins = "http://localhost:4200")
+	 @PutMapping("/remove/{idf}/{idp}")
+		@ResponseBody
+		public void removeFournisseur(@PathVariable("idf") Long idf,@PathVariable("idp") Long idp){
+			 produitService.removeFournisseur(idf, idp);
+		}
 
 }

@@ -44,8 +44,8 @@ public class Produit implements Serializable {
 	private int quantite;
 	
 	private float remise;
-	
-
+	@Lob
+	@Column(name="iamge",length =50000)
 	private String url;
 
 	

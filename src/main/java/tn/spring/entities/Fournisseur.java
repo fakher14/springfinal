@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -42,6 +43,8 @@ public class Fournisseur implements Serializable{
 	private Long idFournisseur ;
 	private String code ;
 	private String libelle ;
+	@Lob
+	private String url;
 
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
