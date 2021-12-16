@@ -34,7 +34,7 @@ public interface IClientService {
 
 	List<Client> changeCategory();
 
-	int getNbrFactureByClient();
+	int getNbrFactureByClient(Client client);
 
 	float nbrClientByCategorie(CategorieClient cat);
 

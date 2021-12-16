@@ -89,6 +89,38 @@ public class ClientRestController {
 		return clientService.findOneById(idClient);
 	}
 	
+	@CrossOrigin(origins = "http://localhost:4200")
+	@GetMapping("/getNbrFactureByClient")
+	@ResponseBody
+	public int getNbrFactureByClient(@RequestBody Client client) {
+		return clientService.getNbrFactureByClient(client);
+	}
+	
+	//Change Categorie Client par rapport à ses factures
+		@CrossOrigin(origins = "http://localhost:4200")
+		@GetMapping("/changeCat")
+		@ResponseBody
+		public List<Client> changeCategorie(){
+			return clientService.changeCategory();
+		}
+		
+		//best clients
+		@CrossOrigin(origins = "http://localhost:4200")
+		@GetMapping("/best")
+		@ResponseBody
+		public Client best(){
+			return clientService.bestClients();
+		}
+		
+		
+		//Nombre des clients par categorie
+		@CrossOrigin(origins = "http://localhost:4200")
+		@GetMapping("/nombre/{cat}")
+		@ResponseBody
+		public float nbrClients(@PathVariable("cat")CategorieClient categorieClient) {
+			return clientService.nbrClientByCategorie(categorieClient);
+		}
+	
 	// get chiffre d'affaire par categorie des clients et entre les deux dates
 	@CrossOrigin(origins = "http://localhost:4200")
 	@GetMapping("/getTotal/{catg}/{d1}/{d2}")
@@ -100,39 +132,5 @@ public class ClientRestController {
 	{
 		return clientService.getChiffreAffaireParCategorieClient(categorieClient, d1, d2) ;
 	}
-
-
-	@CrossOrigin(origins = "http://localhost:4200")
-	@GetMapping("/changeCat")
-	@ResponseBody
-	public List<Client> changeCategorie(){
-		return clientService.changeCategory();
-	}
-
-	//best clients
-	@CrossOrigin(origins = "http://localhost:4200")
-	@GetMapping("/best")
-	@ResponseBody
-	public Client best(){
-		return clientService.bestClients();
-	}
-
-
-	//Nombre des clients par categorie
-	@CrossOrigin(origins = "http://localhost:4200")
-	@GetMapping("/nombre/{cat}")
-	@ResponseBody
-	public float nbrClients(@PathVariable("cat")CategorieClient categorieClient) {
-		return clientService.nbrClientByCategorie(categorieClient);
-	}
-
-	@CrossOrigin(origins = "http://localhost:4200")
-	@GetMapping("/getNbrFactureByClient")
-	public int getNbrFactureByClient() {
-		return clientService.getNbrFactureByClient();
-	}
-
-
-
 	
 }

@@ -27,6 +27,9 @@ public class ClientService implements IClientService{
 	@Autowired 
 	private FactureRepository factureRepository ;
 	
+	@Autowired
+	private FactureService fs;
+	
 	
 	
 	@Override
@@ -73,13 +76,40 @@ public class ClientService implements IClientService{
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
+	//Change Categorie client par rapport factures
+		@Override
+		public List<Client> changeCategory() {
+			float montantTotale = 0; 
+			int count = 0;
+			List<Client> clients = clientRepository.findAll();
+			for (Client client : clients) {
+				List<Facture> factures = factureRepository.findByIdClient(client.getIdClient());
+				for (Facture f : factures) {
+					montantTotale += f.getMontantFacture();
+					count++;
+				}
+				if(!client.getCategorieClient().equals(CategorieClient.Admin)){
+
+					if(montantTotale >= 1000) {
+						client.setCategorieClient(CategorieClient.Premuim);
+						
+					}
+					else if( (montantTotale < 1000) && (count >= 5) ){
+						client.setCategorieClient(CategorieClient.Fidele);
+						
+					}
+					else{
+						client.setCategorieClient(CategorieClient.Ordinaire);
+						
+					}
+				}
+				clientRepository.save(client);
+				montantTotale = 0; 
+				count = 0;
+			}
+			//clientRepository.saveAll(clients);
+			return clients;
+		}
 	
 	
 	/*
@@ -92,21 +122,77 @@ public class ClientService implements IClientService{
 		
 		float montantTotale = 0;
 		
-		for (Client client : listDesClients) {
-			List<Facture>listDesFacturesParClient = factureRepository.findByIdClient(client.getIdClient(), startDate, endDate);
-			float montantTotaleParClient = 0 ;
+		//for (Client client : listDesClients) {
+			List<Facture>listDesFacturesParClient = factureRepository.findByCategorieAndDate(categorieClient, startDate, endDate);
+			//float montantTotaleParClient = 0 ;
 			for (Facture facture : listDesFacturesParClient) {
-				montantTotaleParClient += facture.getMontantFacture() ;
+				montantTotale += facture.getMontantFacture() ;
 			}
-			montantTotale += montantTotaleParClient ;
-		}
+			//montantTotale += montantTotaleParClient ;
+		//}
 		
 		
 		return montantTotale;
 	}
-	/*
-	 * this is not optimised enough so i did another function like this in facture service 
-	 */
+	
+	
+	//Nombre des clients par categorie
+		@Override
+		public float nbrClientByCategorie(CategorieClient cat) {
+			List<Client> clients = clientRepository.findAll();
+			int count = 0;
+			int countClients = 0;
+			float percent = 0;
+			for (Client client : clients) {
+				if(client.getCategorieClient().equals(cat)) {
+					count++; 
+				}
+				countClients++;
+			}
+			percent = ((float)count / countClients)*100;
+			
+			return percent;
+		}
+		
+		@Override
+		public int getNbrFactureByClient(Client client) {
+			List<Facture> factures = fs.getFacturesByClient(client.getIdClient());
+			int count = 0;
+			for (Facture facture : factures) {
+				count++;
+			}
+			return count;
+		}
+		
+		@Override
+		public float revenuClient(Client client) {
+			float montantTotale = 0; 
+			List<Facture> factures = factureRepository.findByIdClient(client.getIdClient());
+			for (Facture facture : factures) {
+				montantTotale += facture.getMontantFacture();
+			}
+			return montantTotale;
+		}
+		
+		@Override
+		public Client bestClients(){
+			List<Client> clients = clientRepository.findAll();
+			Client bestClient = clients.get(0);
+			float total=0;
+			for (Client client : clients) {
+				if(bestClient != client) {
+					total = this.revenuClient(client);
+					if(total > this.revenuClient(bestClient)) {
+						bestClient = client;
+					}
+				}
+			}
+			if(this.revenuClient(bestClient) != 0)
+				return bestClient;
+			else {
+				return null;
+			}
+		}
 	
 	/*
 	 * Pannier pour un client [produit]
@@ -119,107 +205,12 @@ public class ClientService implements IClientService{
 	}
 
 	@Override
-	public List<Client> changeCategory() {
-		float montantTotale = 0;
-		int count = 0;
-		List<Client> clients = clientRepository.findAll();
-		for (Client client : clients) {
-			List<Facture> factures = factureRepository.findByIdClient(client.getIdClient());
-			for (Facture f : factures) {
-				montantTotale += f.getMontantFacture();
-				count++;
-			}
-			if(!client.getCategorieClient().equals("Admin")) {
-				if(montantTotale > 1000) {
-					client.setCategorieClient(CategorieClient.Premuim);
-				}
-				else if(count > 5){
-					client.setCategorieClient(CategorieClient.Fidele);
-				}
-				else
-					client.setCategorieClient(CategorieClient.Ordinaire);
-			}
-			clientRepository.save(client);
-		}
-
-		return clients;
-	}
-
-	@Override
-	public int getNbrFactureByClient() {
-		List<Facture> factures = factureRepository.findAll();
-		int count = 0;
-		for (Facture facture : factures) {
-			count++;
-		}
-		return count;
-	}
-
-	@Override
-	public float nbrClientByCategorie(CategorieClient cat) {
-		List<Client> clients = clientRepository.findAll();
-		int count = 0;
-		int countClients = 0;
-		float percent = 0;
-		for (Client client : clients) {
-			if(client.getCategorieClient().equals(cat)) {
-				count++;
-			}
-			countClients++;
-		}
-		percent = ((float)count / countClients)*100;
-
-		return percent;
-	}
-
-	@Override
-	public float revenuClient(Client client) {
-		float montantTotale = 0;
-		List<Facture> factures = factureRepository.findByIdClient(client.getIdClient());
-		for (Facture facture : factures) {
-			montantTotale += facture.getMontantFacture();
-		}
-		return montantTotale;
-	}
-	@Override
-	public Client bestClients(){
-		List<Client> clients = clientRepository.findAll();
-		Client bestClient = clients.get(0);
-		float total;
-		for (Client client : clients) {
-			if(bestClient != client) {
-				total = this.revenuClient(client);
-				if(total > this.revenuClient(bestClient)) {
-					bestClient = client;
-				}
-			}
-		}
-		if(this.revenuClient(bestClient) != 0)
-			return bestClient;
-		else {
-			return null;
-		}
-	}
-
-	@Override
 	public Client findOneById(Long idClient) {
 		return clientRepository.findById(idClient).get();
 	}
-
 	
 	/*
 	 * Pannier pour un client [produit]
 	 */
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 }
